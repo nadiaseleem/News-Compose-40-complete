@@ -43,10 +43,6 @@ class SearchViewModel @Inject constructor (val webService:NewsService):ViewModel
     private val _isErrorDialogVisible = mutableStateOf(false)
     val isErrorDialogVisible: Boolean get() = _isErrorDialogVisible.value
 
-    fun showErrorDialog() {
-        _isErrorDialogVisible.value = true
-    }
-
     fun hideErrorDialog() {
         _isErrorDialogVisible.value = false
     }

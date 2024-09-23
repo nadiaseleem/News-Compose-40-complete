@@ -56,28 +56,19 @@ fun NewsDetailsScreen(vm:NewsDetailsViewModel= hiltViewModel(),sourceName:String
         vm.getArticle()
     }
 
-    val foundError = vm.uiMessage.errorMessage != null || vm.uiMessage.errorMessageId != null
-    if (foundError&&vm.isErrorDialogVisible) {
-
-        var errorMessage: String = getErrorMessage(vm.uiMessage.errorMessage, vm.uiMessage.errorMessageId)
-
-        if (vm.isErrorDialogVisible) {
-            ErrorDialog(
-                errorMessage,
-                onRetry = vm.uiMessage.retryAction,
-                onDismiss = { vm.hideErrorDialog() }
-            )
-        }
+    if (vm.isErrorDialogVisible){
+        val errorMessage = getErrorMessage(vm.uiMessage.errorMessage,vm.uiMessage.errorMessageId)
+        ErrorDialog(errorMessage = errorMessage, onRetry = vm.uiMessage.retryAction) {vm.hideErrorDialog() }
     }
-    
+
     Scaffold (topBar = {NewsTopAppBar(
         shouldDisplaySearchIcon = false,
         shouldDisplayMenuIcon = false,
         scope = scope,
         titleString = sourceName,
-        drawerState = drawerState 
+        drawerState = drawerState
     )}){padding->
-     
+
         ProgressIndicator(isDisplayed = vm.uiMessage.isLoading)
 
         vm.article?.let {
@@ -153,5 +144,3 @@ private fun NewsDetailsContentPreview() {
 
 
 }
-
-

@@ -43,18 +43,10 @@ fun NewsScreen(
     onNewsClick: (String,String) -> Unit,
     onSearchClick: () -> Unit
 ) {
-    val foundError = vm.uiMessage.errorMessage != null || vm.uiMessage.errorMessageId != null
-    if (foundError&&vm.isErrorDialogVisible) {
 
-        var errorMessage: String = getErrorMessage(vm.uiMessage.errorMessage, vm.uiMessage.errorMessageId)
-
-        if (vm.isErrorDialogVisible) {
-            ErrorDialog(
-                errorMessage,
-                onRetry = vm.uiMessage.retryAction,
-                onDismiss = { vm.hideErrorDialog() }
-            )
-        }
+    if (vm.isErrorDialogVisible){
+        val errorMessage = getErrorMessage(vm.uiMessage.errorMessage,vm.uiMessage.errorMessageId)
+        ErrorDialog(errorMessage = errorMessage, onRetry = vm.uiMessage.retryAction) {vm.hideErrorDialog() }
     }
 
     Scaffold(topBar = {

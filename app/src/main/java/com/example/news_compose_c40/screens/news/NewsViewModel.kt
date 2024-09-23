@@ -30,12 +30,9 @@ class NewsViewModel @Inject constructor(
     private val _uiMessage = mutableStateOf(UIMessage())
     val uiMessage: UIMessage get() = _uiMessage.value
 
-    private val _isErrorDialogVisible = mutableStateOf(true)
+    private val _isErrorDialogVisible = mutableStateOf(false)
     val isErrorDialogVisible: Boolean get() = _isErrorDialogVisible.value
 
-    fun showErrorDialog() {
-        _isErrorDialogVisible.value = true
-    }
 
     fun hideErrorDialog() {
         _isErrorDialogVisible.value = false
@@ -64,6 +61,7 @@ class NewsViewModel @Inject constructor(
                         getSources(categoryId)
                     })
 
+                _isErrorDialogVisible.value = true
 
             } catch (e: UnknownHostException) {
 
@@ -73,6 +71,7 @@ class NewsViewModel @Inject constructor(
                         retryAction = {
                             getSources(categoryId)
                         })
+                _isErrorDialogVisible.value = true
 
             } catch (e: Exception) {
                 _uiMessage.value = UIMessage(
@@ -81,6 +80,7 @@ class NewsViewModel @Inject constructor(
                         retryAction = {
                             getSources(categoryId)
                         })
+                _isErrorDialogVisible.value = true
 
             }
         }
