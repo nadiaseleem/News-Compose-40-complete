@@ -25,5 +25,8 @@ interface NewsService {
         @Query("searchIn") searchIn:String ="title"
     ): ArticlesResponse
 
+    @GET("everything")
+    suspend fun getArticles(
+        @Query("q") searchQuery: String): ArticlesResponse
 
 }

@@ -6,11 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -33,10 +35,11 @@ import com.example.news_compose_c40.ui.theme.NewsComposeC40Theme
 import com.example.news_compose_c40.widgets.NavigationDrawerSheet
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class HomeActivity : ComponentActivity() {
+class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         actionBar?.hide()
         installSplashScreen()
@@ -137,11 +140,14 @@ fun NewsAppNavigation(
         }
 
         composable<SearchRoute> {
-            SearchScreen()
+            SearchScreen{title,sourceNAme->
+                navController.navigate(NewsDetailsRoute(title,sourceNAme))
+
+            }
         }
 
         composable<SettingsRoute>{
-            SettingsScreen()
+            SettingsScreen(scope,drawerState)
         }
     }
 

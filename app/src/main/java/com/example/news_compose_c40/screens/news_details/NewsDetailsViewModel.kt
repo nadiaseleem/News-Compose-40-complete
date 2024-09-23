@@ -29,7 +29,7 @@ class NewsDetailsViewModel @Inject constructor(val newsService: NewsService,save
     private val _uiMessage = mutableStateOf(UIMessage())
     val uiMessage: UIMessage get() = _uiMessage.value
 
-    private val _isErrorDialogVisible = mutableStateOf(true)
+    private val _isErrorDialogVisible = mutableStateOf(false)
     val isErrorDialogVisible: Boolean get() = _isErrorDialogVisible.value
 
     fun hideErrorDialog() {
@@ -56,6 +56,7 @@ class NewsDetailsViewModel @Inject constructor(val newsService: NewsService,save
                      retryAction = {
                          getArticle()
                      })
+                 _isErrorDialogVisible.value = true
 
 
              } catch (e: UnknownHostException) {
@@ -66,6 +67,7 @@ class NewsDetailsViewModel @Inject constructor(val newsService: NewsService,save
                      retryAction = {
                          getArticle()
                      })
+                 _isErrorDialogVisible.value = true
 
              } catch (e: Exception) {
                  _uiMessage.value = UIMessage(
@@ -74,6 +76,7 @@ class NewsDetailsViewModel @Inject constructor(val newsService: NewsService,save
                      retryAction = {
                          getArticle()
                      })
+                 _isErrorDialogVisible.value = true
 
              }
 

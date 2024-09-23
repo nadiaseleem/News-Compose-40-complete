@@ -36,9 +36,9 @@ import com.example.news_compose_c40.R
 import com.example.news_compose_c40.activity.HomeActivity
 import com.example.news_compose_c40.model.article.Article
 import com.example.news_compose_c40.model.source.Source
-import com.example.news_compose_c40.screens.news.getErrorMessage
 import com.example.news_compose_c40.ui.theme.Poppins
 import com.example.news_compose_c40.ui.theme.textColor
+import com.example.news_compose_c40.util.getErrorMessage
 import com.example.news_compose_c40.widgets.ErrorDialog
 import com.example.news_compose_c40.widgets.NewsCard
 import com.example.news_compose_c40.widgets.NewsTopAppBar
@@ -56,27 +56,19 @@ fun NewsDetailsScreen(vm:NewsDetailsViewModel= hiltViewModel(),sourceName:String
         vm.getArticle()
     }
 
-    val foundError = vm.uiMessage.errorMessage != null || vm.uiMessage.errorMessageId != null
-    if (foundError&&vm.isErrorDialogVisible) {
-
-        var errorMessage: String = getErrorMessage(vm.uiMessage.errorMessage, vm.uiMessage.errorMessageId)
-
-        if (vm.isErrorDialogVisible) {
-            ErrorDialog(
-                errorMessage,
-                onRetry = vm.uiMessage.retryAction,
-                onDismiss = { vm.hideErrorDialog() }
-            )
-        }
+    if (vm.isErrorDialogVisible){
+        val errorMessage = getErrorMessage(vm.uiMessage.errorMessage,vm.uiMessage.errorMessageId)
+        ErrorDialog(errorMessage = errorMessage, onRetry = vm.uiMessage.retryAction) {vm.hideErrorDialog() }
     }
-    
+
     Scaffold (topBar = {NewsTopAppBar(
         shouldDisplaySearchIcon = false,
         shouldDisplayMenuIcon = false,
         scope = scope,
-        drawerState = drawerState 
+        titleString = sourceName,
+        drawerState = drawerState
     )}){padding->
-     
+
         ProgressIndicator(isDisplayed = vm.uiMessage.isLoading)
 
         vm.article?.let {
@@ -152,5 +144,3 @@ private fun NewsDetailsContentPreview() {
 
 
 }
-
-

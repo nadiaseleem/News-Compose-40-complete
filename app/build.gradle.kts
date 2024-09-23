@@ -13,7 +13,9 @@ plugins {
 android {
     namespace = "com.example.news_compose_c40"
     compileSdk = 34
-
+    androidResources {
+        generateLocaleConfig = true
+    }
     defaultConfig {
         applicationId = "com.example.news_compose_c40"
         minSdk = 24

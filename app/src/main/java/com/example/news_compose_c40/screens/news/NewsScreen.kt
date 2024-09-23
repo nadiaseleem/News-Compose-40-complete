@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.news_compose_c40.R
 import com.example.news_compose_c40.screens.news_details.NewsDetailsViewModel
+import com.example.news_compose_c40.util.getErrorMessage
 import com.example.news_compose_c40.widgets.ErrorDialog
 import com.example.news_compose_c40.widgets.NewsList
 import com.example.news_compose_c40.widgets.NewsTopAppBar
@@ -42,18 +43,10 @@ fun NewsScreen(
     onNewsClick: (String,String) -> Unit,
     onSearchClick: () -> Unit
 ) {
-    val foundError = vm.uiMessage.errorMessage != null || vm.uiMessage.errorMessageId != null
-    if (foundError&&vm.isErrorDialogVisible) {
 
-        var errorMessage: String = getErrorMessage(vm.uiMessage.errorMessage, vm.uiMessage.errorMessageId)
-
-        if (vm.isErrorDialogVisible) {
-            ErrorDialog(
-                errorMessage,
-                onRetry = vm.uiMessage.retryAction,
-                onDismiss = { vm.hideErrorDialog() }
-            )
-        }
+    if (vm.isErrorDialogVisible){
+        val errorMessage = getErrorMessage(vm.uiMessage.errorMessage,vm.uiMessage.errorMessageId)
+        ErrorDialog(errorMessage = errorMessage, onRetry = vm.uiMessage.retryAction) {vm.hideErrorDialog() }
     }
 
     Scaffold(topBar = {
@@ -112,9 +105,6 @@ fun NewsScreen(
         }
     }
 }
-@Composable
-fun getErrorMessage(errorMessage: String?, errorMessageId: Int?) = errorMessage ?: errorMessageId?.let { stringResource(id = it) } ?: stringResource(id = R.string.something_went_wrong)
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
