@@ -36,9 +36,9 @@ import com.example.news_compose_c40.R
 import com.example.news_compose_c40.activity.HomeActivity
 import com.example.news_compose_c40.model.article.Article
 import com.example.news_compose_c40.model.source.Source
-import com.example.news_compose_c40.screens.news.getErrorMessage
 import com.example.news_compose_c40.ui.theme.Poppins
 import com.example.news_compose_c40.ui.theme.textColor
+import com.example.news_compose_c40.util.getErrorMessage
 import com.example.news_compose_c40.widgets.ErrorDialog
 import com.example.news_compose_c40.widgets.NewsCard
 import com.example.news_compose_c40.widgets.NewsTopAppBar
@@ -74,6 +74,7 @@ fun NewsDetailsScreen(vm:NewsDetailsViewModel= hiltViewModel(),sourceName:String
         shouldDisplaySearchIcon = false,
         shouldDisplayMenuIcon = false,
         scope = scope,
+        titleString = sourceName,
         drawerState = drawerState 
     )}){padding->
      
