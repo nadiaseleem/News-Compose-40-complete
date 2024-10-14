@@ -18,9 +18,9 @@ class NewsRepoImpl @Inject constructor(val networkHandler: NetworkHandler,val re
         }
     }
 
-    override suspend fun getArticles(sourceId: String): List<Article> {
+    override suspend fun getArticles(sourceId: String,page:Int?,pageSize:Int?): List<Article> {
         if (networkHandler.isNetworkAvailable()){
-            val articles = remoteDataSource.getArticles(sourceId)
+            val articles = remoteDataSource.getArticles(sourceId,page, pageSize)
             articles.forEach { it.sourceId = sourceId }
             localDataSource.saveArticles(articles)
             return articles

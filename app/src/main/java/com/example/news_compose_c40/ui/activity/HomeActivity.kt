@@ -1,11 +1,16 @@
 package com.example.news_compose_c40.ui.activity
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -14,6 +19,7 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -24,6 +30,7 @@ import com.example.news_compose_c40.ui.screens.categories.CategoriesRoute
 import com.example.news_compose_c40.ui.screens.categories.CategoriesScreen
 import com.example.news_compose_c40.ui.screens.news.NewsRoute
 import com.example.news_compose_c40.ui.screens.news.NewsScreen
+import com.example.news_compose_c40.ui.screens.news.NewsViewModel
 import com.example.news_compose_c40.ui.screens.news_details.NewsDetailsRoute
 import com.example.news_compose_c40.ui.screens.news_details.NewsDetailsScreen
 import com.example.news_compose_c40.ui.screens.search.SearchRoute
@@ -38,17 +45,34 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
+    val viewModel by viewModels<NewsViewModel>()
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == ConnectivityManager.CONNECTIVITY_ACTION) {
+                viewModel.updateConnectivity()
+            }
+        }
+
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         actionBar?.hide()
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         setContent {
             NewsComposeC40Theme {
                 NavigationDrawer()
             }
         }
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     fun openWebsiteForNews(url: String?) {
@@ -58,103 +82,108 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
-}
-
-@Composable
-fun NavigationDrawer() {
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-
-    val navController = rememberNavController()
-
-    ModalNavigationDrawer(drawerContent = {
-        NavigationDrawerSheet(onNavigateToCategoriesClick = {
-            navController.popBackStack()
-
-            if (navController.currentDestination?.route != CategoriesRoute.toString()) {
-                navController.navigate(CategoriesRoute)
-            }
-            scope.launch {
-                drawerState.close()
-            }
 
 
-        }, onNavigateToSettingsClick = {
-            navController.navigate(SettingsRoute)
-            scope.launch {
-                drawerState.close()
-            }
-        })
-    }, drawerState = drawerState) {
+    @Composable
+    fun NavigationDrawer() {
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
+
+        val navController = rememberNavController()
+
+        ModalNavigationDrawer(drawerContent = {
+            NavigationDrawerSheet(onNavigateToCategoriesClick = {
+                navController.popBackStack()
+
+                if (navController.currentDestination?.route != CategoriesRoute.toString()) {
+                    navController.navigate(CategoriesRoute)
+                }
+                scope.launch {
+                    drawerState.close()
+                }
 
 
-        NewsAppNavigation(navController, scope, drawerState)
+            }, onNavigateToSettingsClick = {
+                navController.navigate(SettingsRoute)
+                scope.launch {
+                    drawerState.close()
+                }
+            })
+        }, drawerState = drawerState) {
 
 
+            NewsAppNavigation(navController, scope, drawerState)
+
+
+        }
     }
-}
 
 
-@Composable
-fun NewsAppNavigation(
-    navController: NavHostController,
-    scope: CoroutineScope,
-    drawerState: DrawerState
-) {
-
-    NavHost(
-        navController = navController,
-        startDestination = CategoriesRoute
+    @Composable
+    fun NewsAppNavigation(
+        navController: NavHostController,
+        scope: CoroutineScope,
+        drawerState: DrawerState
     ) {
-        composable<CategoriesRoute> {
 
-            CategoriesScreen(
-                scope=scope,
-                drawerState=drawerState
-            ) { categoryApiID, categoryName ->
-                navController.navigate(NewsRoute(categoryApiID,categoryName))
-            }
+        NavHost(
+            navController = navController,
+            startDestination = CategoriesRoute
+        ) {
+            composable<CategoriesRoute> {
 
-        }
-
-        composable<NewsRoute>{ navBackStackEntry ->
-            val route = navBackStackEntry.toRoute<NewsRoute>()
-            NewsScreen(
-                categoryID = route.categoryID,
-                categoryName =  route.categoryName,
-                scope = scope,
-                drawerState = drawerState,
-                onNewsClick =  { title,sourceName ->
-                    navController.navigate(NewsDetailsRoute(title,sourceName))
-
-                }, onSearchClick = {
-                    navController.navigate(SearchRoute)
-                })
-        }
-
-        composable<NewsDetailsRoute> {
-            val args = it.toRoute<NewsDetailsRoute>()
-            NewsDetailsScreen( sourceName = args.sourceName, scope = scope, drawerState = drawerState)
-        }
-
-        composable<SearchRoute> {
-            SearchScreen{title,sourceNAme->
-                navController.navigate(NewsDetailsRoute(title,sourceNAme))
+                CategoriesScreen(
+                    scope = scope,
+                    drawerState = drawerState
+                ) { categoryApiID, categoryName ->
+                    navController.navigate(NewsRoute(categoryApiID, categoryName))
+                }
 
             }
+
+            composable<NewsRoute> { navBackStackEntry ->
+                val route = navBackStackEntry.toRoute<NewsRoute>()
+                NewsScreen(vm = viewModel,
+                    categoryID = route.categoryID,
+                    categoryName = route.categoryName,
+                    scope = scope,
+                    drawerState = drawerState,
+                    onNewsClick = { title, sourceName ->
+                        navController.navigate(NewsDetailsRoute(title, sourceName))
+
+                    }, onSearchClick = {
+                        navController.navigate(SearchRoute)
+                    })
+            }
+
+            composable<NewsDetailsRoute> {
+                val args = it.toRoute<NewsDetailsRoute>()
+                NewsDetailsScreen(
+                    sourceName = args.sourceName,
+                    scope = scope,
+                    drawerState = drawerState
+                )
+            }
+
+            composable<SearchRoute> {
+                SearchScreen { title, sourceNAme ->
+                    navController.navigate(NewsDetailsRoute(title, sourceNAme))
+
+                }
+            }
+
+            composable<SettingsRoute> {
+                SettingsScreen(scope, drawerState)
+            }
         }
 
-        composable<SettingsRoute>{
-            SettingsScreen(scope,drawerState)
-        }
+
     }
 
 
-}
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun PreviewNewsScreen() {
-    NavigationDrawer()
+    @Preview(showSystemUi = true)
+    @Composable
+    fun PreviewNewsScreen() {
+        NavigationDrawer()
+    }
 }

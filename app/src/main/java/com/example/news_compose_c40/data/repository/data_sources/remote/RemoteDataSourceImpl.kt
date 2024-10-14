@@ -10,8 +10,8 @@ class RemoteDataSourceImpl @Inject constructor(private val newsService:NewsServi
        return  newsService.getSources(categoryId).sources ?: listOf()
     }
 
-    override suspend fun getArticles(sourceId: String): List<Article> {
-        return newsService.getArticles(sourceId=sourceId).articles ?: listOf()
+    override suspend fun getArticles(sourceId: String,page:Int?,pageSize:Int?): List<Article> {
+        return newsService.getArticles(sourceId=sourceId,page,pageSize).articles ?: listOf()
     }
 
     override suspend fun getArticlesThatHas(searchQuery: String): List<Article> {

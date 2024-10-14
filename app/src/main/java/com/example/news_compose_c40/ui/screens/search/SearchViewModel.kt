@@ -35,8 +35,8 @@ class SearchViewModel @Inject constructor (val newsRepo: NewsRepo):ViewModel() {
         _isFocused.value = isFocusefd
     }
 
-    private var _articlesList =mutableStateOf<List<Article>?>(null)
-    val articlesList: List<Article>? get() = _articlesList.value
+    private var _articlesList =mutableStateOf<List<Article>>(listOf())
+    val articlesList: List<Article> get() = _articlesList.value
 
     private val _uiMessage = mutableStateOf(UIMessage())
     val uiMessage: UIMessage get() = _uiMessage.value

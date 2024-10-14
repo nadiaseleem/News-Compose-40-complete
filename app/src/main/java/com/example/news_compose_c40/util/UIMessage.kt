@@ -5,5 +5,6 @@ data class UIMessage(
     var retryAction:(()->Unit)? = null,
     var errorMessage:String?=null,
     var errorMessageId:Int?=null,
-    var shouldDisplayNoArticlesFound:Boolean = false
+    var shouldDisplayNoArticlesFound:Boolean = false,
+    var requestingNextPage:Boolean=false
 )

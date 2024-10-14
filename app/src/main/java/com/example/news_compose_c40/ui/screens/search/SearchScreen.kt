@@ -135,10 +135,9 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel(), onNewsClick:(String, Str
             ErrorDialog(errorMessage = errorMessage, onRetry = vm.uiMessage.retryAction) {vm.hideErrorDialog() }
         }
 
-        NewsList(vm.articlesList, shouldDisplayNoArticlesFound = vm.uiMessage.shouldDisplayNoArticlesFound, loadingState = vm.uiMessage.isLoading) {title,sourceName->
+        NewsList(vm.articlesList, shouldDisplayNoArticlesFound = vm.uiMessage.shouldDisplayNoArticlesFound, loadingState = vm.uiMessage.isLoading,onNewsClick={title,sourceName->
             onNewsClick(title,sourceName)
-
-        }
+        })
     }
 
 
@@ -149,6 +148,6 @@ fun SearchScreen(vm: SearchViewModel = hiltViewModel(), onNewsClick:(String, Str
 private fun SearchScreenPreview() {
     SearchScreen{_,_->
 
-        
+
     }
 }

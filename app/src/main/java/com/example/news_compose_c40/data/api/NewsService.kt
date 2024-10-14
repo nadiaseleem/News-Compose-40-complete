@@ -16,7 +16,9 @@ interface NewsService {
 
     @GET("everything")
     suspend fun getArticles(
-        @Query("sources") sourceId: String
+        @Query("sources") sourceId: String,
+        @Query("page") page:Int?=null,
+        @Query("pageSize") pageSize: Int?=null
     ): ArticlesResponse
 
     @GET("everything")
