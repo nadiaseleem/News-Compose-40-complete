@@ -45,15 +45,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
-    val viewModel by viewModels<NewsViewModel>()
-    private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-                viewModel.updateConnectivity()
-            }
-        }
 
-    }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +54,6 @@ class HomeActivity : AppCompatActivity() {
         installSplashScreen()
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
         setContent {
             NewsComposeC40Theme {
                 NavigationDrawer()
@@ -70,10 +62,6 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterReceiver(receiver)
-    }
 
     fun openWebsiteForNews(url: String?) {
         url?.let {
@@ -143,7 +131,7 @@ class HomeActivity : AppCompatActivity() {
 
             composable<NewsRoute> { navBackStackEntry ->
                 val route = navBackStackEntry.toRoute<NewsRoute>()
-                NewsScreen(vm = viewModel,
+                NewsScreen(
                     categoryID = route.categoryID,
                     categoryName = route.categoryName,
                     scope = scope,
